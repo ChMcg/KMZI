@@ -2,7 +2,11 @@ from bitarray import bitarray
 
 def chunks(src: str, length: int) -> list[str]:
     n = length
-    return [src[i:i+n] for i in range(0, len(src), n)]
+    ret = [src[i:i+n] for i in range(0, len(src), n)]
+    for i, chunk in enumerate(ret):
+        if len(chunk) < length:
+            ret[i] += '0' * (length - len(chunk))
+    return ret
 
 def xor(a: str, b: str) -> str:
     def _xor(a: str, b: str) -> str:
@@ -37,3 +41,21 @@ def bytes_to_str_bitarray(src: bytes, length: int) -> str:
 
 def bits_to_hex(bits: str) -> str:
     return ' '.join([hex(eval(f"0b{x}"))[2:] for x in chunks(bits, 8)])
+
+def hex_to_raw(hex: str) -> str:
+    return ''.join([chr(eval(f"0x{x}")) for x in hex.split(' ')])
+
+def print_table_of_bits(data: str, rows: int) -> None:
+    for i, item in enumerate(data):
+        if (i+1) % rows == 0:
+            print(f"{item}\n", sep='', end='')
+        else:
+            print(f"{item} ", sep='', end='')
+    print()
+
+def print_table(data: list[str], rows: int) -> None:
+    for i, item in enumerate(data):
+        if (i+1) % rows == 0:
+            print(f"{item}\n", sep='')
+        else:
+            print(f"{item}\t", sep='')
