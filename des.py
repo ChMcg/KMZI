@@ -27,7 +27,7 @@ class s_box:
         if len(data) != 6:
             raise InvalidBlockSizeException()
         outer = data[1] + data[-1]
-        inner = data[2:-2]
+        inner = data[1:-1]
         row = eval(f"0b{outer}")
         column = eval(f"0b{inner}")
         n = 16*row + column
@@ -45,9 +45,6 @@ class s_box:
 
 
 class DES:
-    def __init__(self):
-        pass
-    
     def _f(self, data: str, key: str) -> str:
         if len(data) != 32 or len(key) != 48:
             raise InvalidBlockSizeException()
@@ -67,8 +64,8 @@ class DES:
             right = shift(right, DES_materials.rotation[i])
             keys.append(permutation(left + right, DES_materials.PC_2))
         # print('---- Ключи ----')
-        # for key in keys:
-        #     print_table_of_bits(key, 8)
+        # for i, key in enumerate(keys):
+        #     print(f"k_{i+1}", key, sep='\t')
         return keys
     
     def encrypt(self, data: str, key: str) -> str:
@@ -81,10 +78,23 @@ class DES:
         # print('---- После перестановки ----')
         # print_table_of_bits(tmp, 8)
         left, right = split_halves(tmp)
-        for i in range(16):
-            tmp = right
-            right = xor(left, self._f(right, keys[i]))
-            left, right = tmp, left
+        # print('---- Левая часть ----')
+        # print_table_of_bits(left, 8)
+        # print('---- Правая часть ----')
+        # print_table_of_bits(right, 8)
+        for i in range(15):
+            # print(f"---- Раунд {i+1} ----")
+            # print(f"A_{i}", left)
+            # print(f"B_{i}", right)
+            # print(f"K_{i+1}", '=', keys[i])
+            # print(f"f = {self._f(right, keys[i])}")
+            # print()
+            # print(f"    ", left)
+            # print(f"xor ", self._f(right, keys[i]))
+            # print( "is  ", xor(left, self._f(right, keys[i])))
+            left = xor(left, self._f(right, keys[i]))
+            left, right = right, left
+        left = xor(left, self._f(right, keys[16-1]))
         left, right = right, left
         return permutation(left + right, DES_materials.FP)
     
@@ -94,11 +104,13 @@ class DES:
         keys = self._generate_keys(key)
         tmp = permutation(data, DES_materials.IP)
         left, right = split_halves(tmp)
-        for i in range(16):
-            tmp = right
-            right = xor(left, self._f(right, keys[i]))
-            left, right = tmp, left
+        for i in range(15):
+            right = xor(right, self._f(left, keys[15-i]))
+            left, right = right, left
+            # print(f"{i+1:2}:", left, right)
+        right = xor(right, self._f(left, keys[0]))
         left, right = right, left
+        # print(f"{16}:", left, right)
         return permutation(left + right, DES_materials.FP)
 
     def encrypt_str(self, data: str, key: str) -> str:
@@ -124,7 +136,7 @@ class DES:
 
 if __name__ == '__main__':
     des = DES()
-    encrypted = des.encrypt_str('bakhir_andrey', '736103')
+    encrypted = des.encrypt_str('Bakhir_Andrey', '736103')
     print(encrypted)
     print(bits_to_hex(encrypted))
     # print(hex_to_raw(bits_to_hex(encrypted)))
