@@ -1,3 +1,13 @@
 {
-    "python.pythonPath": "venv/bin/python3.9"
+    "python.pythonPath": "venv/bin/python3.9",
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/__pycache__": true,
+        "venv": true
+    },
+    "explorerExclude.backup": null
 }
