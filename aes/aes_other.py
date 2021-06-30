@@ -29,7 +29,7 @@ class Column(setOfFourBytes):
 
 class Matrix(BaseModel):
     raw: list[int]
-    text: list[str] = []
+    # text: list[str] = []
 
     def __init__(self, raw_data: bytes):
         if not len(raw_data) == 16:
@@ -42,6 +42,10 @@ class Matrix(BaseModel):
     @staticmethod
     def from_string(data: str) -> Matrix:
         return Matrix(data.encode().ljust(16, b'\x00')[:16])
+    
+    @staticmethod
+    def from_bytes(data: bytes) -> Matrix:
+        return Matrix(data.ljust(16, b'\x00')[:16])
     
     def __str__(self) -> str:
         ret = ''
@@ -79,3 +83,7 @@ class Matrix(BaseModel):
     def set_row(self, row: int, row_obj: Column):
         for column, value in enumerate(row_obj.raw):
             self.raw[column+row*4] = value
+
+    def xor(self, other: Matrix) -> Matrix:
+        new = Matrix.from_string('')
+        new.set_columns([a.xor(b) for a,b in zip(self.columns(), other.columns())])
