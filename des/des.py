@@ -1,3 +1,4 @@
+from __future__ import annotations
 from bitarray import bitarray
 from des_materials import DES_materials
 from enum import Enum
@@ -46,7 +47,9 @@ class s_box:
 
 
 class DES:
-    def _f(self, data: str, key: str) -> str:
+
+    @staticmethod
+    def _f(data: str, key: str) -> str:
         if len(data) != 32 or len(key) != 48:
             raise InvalidBlockSizeException()
         tmp = xor(permutation(data, DES_materials.E), key)
@@ -54,7 +57,8 @@ class DES:
         tmp = permutation(tmp, DES_materials.P)
         return tmp
     
-    def _generate_keys(self, key: str) -> list[str]:
+    @staticmethod
+    def _generate_keys(key: str) -> list[str]:
         if len(key) != 64:
             raise InvalidBlockSizeException()
         keys = []
@@ -69,10 +73,11 @@ class DES:
         #     print(f"k_{i+1}", key, sep='\t')
         return keys
     
-    def encrypt(self, data: str, key: str) -> str:
+    @staticmethod
+    def _encrypt(data: str, key: str) -> str:
         if len(data) != 64 or len(key) != 64:
             raise InvalidBlockSizeException()
-        keys = self._generate_keys(key)
+        keys = DES._generate_keys(key)
         # print('---- Текст ----')
         # print_table_of_bits(data, 8)
         tmp = permutation(data, DES_materials.IP)
@@ -88,49 +93,60 @@ class DES:
             # print(f"A_{i}", left)
             # print(f"B_{i}", right)
             # print(f"K_{i+1}", '=', keys[i])
-            # print(f"f = {self._f(right, keys[i])}")
+            # print(f"f = {DES._f(right, keys[i])}")
             # print()
             # print(f"    ", left)
-            # print(f"xor ", self._f(right, keys[i]))
-            # print( "is  ", xor(left, self._f(right, keys[i])))
-            left = xor(left, self._f(right, keys[i]))
+            # print(f"xor ", DES._f(right, keys[i]))
+            # print( "is  ", xor(left, DES._f(right, keys[i])))
+            left = xor(left, DES._f(right, keys[i]))
             left, right = right, left
-        left = xor(left, self._f(right, keys[16-1]))
+        left = xor(left, DES._f(right, keys[16-1]))
         left, right = right, left
         return permutation(left + right, DES_materials.FP)
     
-    def decrypt(self, data: str, key: str) -> str:
+    @staticmethod
+    def _decrypt(data: str, key: str) -> str:
         if len(data) != 64 or len(key) != 64:
             raise InvalidBlockSizeException()
-        keys = self._generate_keys(key)
+        keys = DES._generate_keys(key)
         tmp = permutation(data, DES_materials.IP)
         left, right = split_halves(tmp)
         for i in range(15):
-            right = xor(right, self._f(left, keys[15-i]))
+            right = xor(right, DES._f(left, keys[15-i]))
             left, right = right, left
             # print(f"{i+1:2}:", left, right)
-        right = xor(right, self._f(left, keys[0]))
+        right = xor(right, DES._f(left, keys[0]))
         left, right = right, left
         # print(f"{16}:", left, right)
         return permutation(left + right, DES_materials.FP)
 
-    def encrypt_str(self, data: str, key: str) -> str:
+    def _encrypt_str(data: str, key: str) -> str:
         bytes_data = bytes_to_str_bitarray(data.encode(), len(data.encode())*8)
         bytes_key = bytes_to_str_bitarray(key.encode(), 64)
         for chunk in chunks(bytes_data, 64):
             if len(chunk) < 64: 
                 chunk += '0' * (64 - len(chunk))
-            
-        return ''.join([self.encrypt(chunk, bytes_key) for chunk in chunks(bytes_data, 64)])
+        return ''.join([DES._encrypt(chunk, bytes_key) for chunk in chunks(bytes_data, 64)])
 
-    def decrypt_str(self, data: str, key: str) -> str:
+    def _decrypt_str(data: str, key: str) -> str:
         bytes_data = bytes_to_str_bitarray(data.encode(), len(data.encode()))
         bytes_key = bytes_to_str_bitarray(key.encode(), 64)
-        return ''.join([self.decrypt(chunk, bytes_key) for chunk in chunks(bytes_data, 64)])
+        return ''.join([DES._decrypt(chunk, bytes_key) for chunk in chunks(bytes_data, 64)])
 
-    def decrypt_bits(self, data: str, key: str) -> str:
+    def _decrypt_bits(data: str, key: str) -> str:
         bytes_data = data
         bytes_key = bytes_to_str_bitarray(key.encode(), 64)
+        return ''.join([DES._decrypt(chunk, bytes_key) for chunk in chunks(bytes_data, 64)]) 
+
+    @staticmethod
+    def encrypt(data: str, key: str) -> Data:
+        tmp = DES._encrypt_str(data, key)
+        return Data(tmp, DataType.Bits)
+
+    @staticmethod
+    def decrypt(data: Data, key: str) -> Data:
+        return Data(DES._decrypt_bits(data.to_bits(), key), DataType.Bits)
+
 
 class DataType(Enum):
     Raw     = 0
@@ -164,11 +180,11 @@ class Data:
 
 if __name__ == '__main__':
     des = DES()
-    encrypted = des.encrypt_str('Bakhir_Andrey', '736103')
+    encrypted = des._encrypt_str('Bakhir_Andrey', '736103')
     print(encrypted)
     print(bits_to_hex(encrypted))
     # print(hex_to_raw(bits_to_hex(encrypted)))
-    decrypted = des.decrypt_bits(encrypted, '736103')
+    decrypted = des._decrypt_bits(encrypted, '736103')
     print(decrypted)
     print(bits_to_hex(decrypted))
     print(hex_to_raw(bits_to_hex(decrypted)))
