@@ -19,6 +19,6 @@ class DES_EDE:
 
 if __name__ == '__main__':
     key = '123'
-    a = DES3_EDE.encrypt('test test test', key)
-    b = DES3_EDE.decrypt(a, key)
+    a = DES_EDE.encrypt('test test test', key)
+    b = DES_EDE.decrypt(a, key)
     print(b.to_raw())
