@@ -1,6 +1,7 @@
 from bitarray import bitarray
 from des_materials import DES_materials
-from other import chunks, hex_to_raw, xor, shift, permutation, split_halves, bytes_to_str_bitarray, bits_to_hex
+from enum import Enum
+from other import bits_to_raw, chunks, hex_to_raw, xor, shift, permutation, split_halves, bytes_to_str_bitarray, bits_to_hex
 from other import print_table_of_bits, print_table
 
 
@@ -130,8 +131,35 @@ class DES:
     def decrypt_bits(self, data: str, key: str) -> str:
         bytes_data = data
         bytes_key = bytes_to_str_bitarray(key.encode(), 64)
-        return ''.join([self.decrypt(chunk, bytes_key) for chunk in chunks(bytes_data, 64)]) 
 
+class DataType(Enum):
+    Raw     = 0
+    Bits    = 1
+    Hex     = 2
+
+class Data:
+    data: str
+    data_type: DataType
+
+    def __init__(self, data: str, data_type: DataType) -> None:
+        self.data = data
+        self.data_type = data_type
+    
+    def to_raw(self) -> str:
+        if self.data_type == DataType.Bits: return bits_to_raw(self.data)
+        if self.data_type == DataType.Raw:  return self.data
+        if self.data_type == DataType.Hex:  return hex_to_raw(self.data)
+        raise Exception("Unhandled data type" + str(self.data_type))
+
+    def to_hex(self) -> str:
+        if self.data_type == DataType.Hex:  return self.data
+        if self.data_type == DataType.Bits: return bits_to_hex(self.data)
+        raise Exception("Unhandled data type" + str(self.data_type))
+
+    def to_bits(self) -> str:
+        if self.data_type == DataType.Bits: return self.data
+        raise Exception("Unhandled data type" + str(self.data_type))
+        
 
 
 if __name__ == '__main__':
