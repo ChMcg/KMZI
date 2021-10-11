@@ -45,6 +45,9 @@ def bits_to_hex(bits: str) -> str:
 def hex_to_raw(hex: str) -> str:
     return ''.join([chr(eval(f"0x{x}")) for x in hex.split(' ')])
 
+def bits_to_raw(bits: str) -> str:
+    return hex_to_raw(bits_to_hex(bits))
+
 def print_table_of_bits(data: str, rows: int) -> None:
     for i, item in enumerate(data):
         if (i+1) % rows == 0:
