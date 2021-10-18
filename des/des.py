@@ -5,6 +5,8 @@ from enum import Enum
 from other import bits_to_raw, chunks, hex_to_raw, xor, shift, permutation, split_halves, bytes_to_str_bitarray, bits_to_hex
 from other import print_table_of_bits, print_table
 
+from tqdm import tqdm
+
 
 class InvalidBlockSizeException(BaseException):
     pass
@@ -127,6 +129,7 @@ class DES:
             if len(chunk) < 64: 
                 chunk += '0' * (64 - len(chunk))
         return ''.join([DES._encrypt(chunk, bytes_key) for chunk in chunks(bytes_data, 64)])
+        # return ''.join([DES._encrypt(chunk, bytes_key) for chunk in tqdm(chunks(bytes_data, 64))])
 
     def _decrypt_str(data: str, key: str) -> str:
         bytes_data = bytes_to_str_bitarray(data.encode(), len(data.encode()))

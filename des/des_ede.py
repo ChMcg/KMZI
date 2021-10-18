@@ -19,6 +19,12 @@ class DES_EDE:
 
 if __name__ == '__main__':
     key = '123'
-    a = DES_EDE.encrypt('test test test', key)
-    b = DES_EDE.decrypt(a, key)
-    print(b.to_raw())
+    # a = DES_EDE.encrypt('test test test', key)
+    # b = DES_EDE.decrypt(a, key)
+    # print(b.to_raw())
+
+    with open('a.txt', 'r') as f:
+        data = f.read(6* 10* 1024)
+        print(len(data))
+        DES_EDE.encrypt(data, key)
+
