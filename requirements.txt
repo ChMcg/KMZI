@@ -1,7 +1,9 @@
-bitarray==1.8.1
+bitarray==2.3.4
 cryptools==0.0.6
+mpmath==1.2.1
 numpy==1.20.1
 pycryptodome==3.10.1
 pydantic==1.8.1
 scipy==1.6.1
+sympy==1.9
 typing-extensions==3.7.4.3

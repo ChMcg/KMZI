@@ -1,12 +1,12 @@
-from aes.aes import AES, Key
-from aes.aes_other import Matrix
+from rsa.rsa import RSA, Data
+from rsa.rsa_other import generate_prime
+from tqdm import tqdm
 
 
-text = Matrix.from_string('bakhir_andrey')
-key = Key.from_string('7361_dmitrievich')
+if __name__=='__main__':
+    keys = RSA.generate_keys()
+    raw = 'Test test test'
+    encrypted = RSA.encrypt(raw, keys.public)
+    decrypted = RSA.decrypt(encrypted, keys.private)
+    print(decrypted.to_raw())
 
-print('Ключ:')
-print(key)
-
-keys = key.generate_keys()
-print(keys)
