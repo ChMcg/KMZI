@@ -1,9 +1,5 @@
-from bitarray import bitarray
-from bitarray.util import int2ba, ba2int
-from math import sqrt
+from math import gcd, sqrt
 from random import randint
-from tqdm import tqdm
-
 
 def is_prime(num: int) -> bool:
     if num == 2:
@@ -15,35 +11,26 @@ def is_prime(num: int) -> bool:
             return False
     return True
 
-def generate_prime(base_length: int = 32, rand_range: int = 1 << 32) -> int:
-    bottom = 1 << base_length
-    top = bottom + rand_range
-    tmp_int = randint(bottom, top)
-    if is_prime(tmp_int):
-        return tmp_int
-    while not is_prime(tmp_int):
-        tmp_int = randint(bottom, top)
-        if is_prime(tmp_int):
-            return tmp_int
 
-    # base_number = bitarray(base_length)
-    # base_number[0] = 1
-    # tmp_rand = int2ba(randint(1, rand_range))
-    # tmp = base_number + tmp_rand
-    # # tmp_int = int.from_bytes(tmp.tobytes(), 'little')
-    # tmp_int = ba2int(tmp)
-    # if is_prime(tmp_int): 
-    #     return tmp
-    # else:
-    #     while not is_prime(tmp_int):
-    #         tmp_rand = int2ba(randint(1, rand_range))
-    #         # tmp_rand = randint(1, rand_range)
-    #         tmp = base_number + tmp_rand
-    #         # tmp_int = int.from_bytes(tmp.tobytes(), 'little')
-    #         tmp_int = ba2int(tmp)
-    #         if is_prime(tmp_int): 
-    #             return tmp
-    # # print(a)
+def ferma_is_prime(number: int) -> bool:
+    if (number == 2): return True
+    for _ in range(100):
+        a = randint(3, number - 2)
+        if gcd(a, number) != 1: return False
+        if pow(a, number-1, number) != 1: return False
+    return True
+
+
+def generate_prime(base_length: int = 512) -> int:
+    bottom = 1 << base_length
+    top = (1 << base_length) ^ ((1 << base_length) - 1)
+    tmp_int = randint(bottom, top)
+    if ferma_is_prime(tmp_int):
+        return tmp_int
+    while not ferma_is_prime(tmp_int):
+        tmp_int = randint(bottom, top)
+        if ferma_is_prime(tmp_int):
+            return tmp_int
 
 
 def extended_gcd(a: int, b: int) -> tuple[int]:

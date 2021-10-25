@@ -1,11 +1,8 @@
 from __future__ import annotations
-from bitarray import bitarray
-from random import randint, shuffle
+from random import randint
 from math import gcd
-from sympy.ntheory.factor_ import totient
 import json
 
-from rsa.rsa_other import is_prime
 from rsa.rsa_other import generate_prime
 from rsa.rsa_other import extended_gcd
 

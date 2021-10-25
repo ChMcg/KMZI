@@ -1,12 +1,24 @@
 from rsa.rsa import RSA, Data
-from rsa.rsa_other import generate_prime
-from tqdm import tqdm
+import time
 
 
 if __name__=='__main__':
+    start = time.perf_counter()
     keys = RSA.generate_keys()
+    end = time.perf_counter()
+    print(f"Key generation time: \t{end - start}")
+
     raw = 'Test test test'
+    
+    start = time.perf_counter()
     encrypted = RSA.encrypt(raw, keys.public)
+    end = time.perf_counter()
+    print(f"Encryption time: \t{end - start}")
+
+    start = time.perf_counter()
     decrypted = RSA.decrypt(encrypted, keys.private)
-    print(decrypted.to_raw())
+    end = time.perf_counter()
+    print(f"Decryption time: \t{end - start}")
+
+    print(f"Decrypted: {decrypted.to_raw()}")
 
