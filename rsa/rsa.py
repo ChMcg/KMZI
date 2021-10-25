@@ -66,7 +66,7 @@ class RSA:
     def _generate_d(euler: int, e: int) -> int:
         _gcd, _, arg = extended_gcd(euler, e)
         if _gcd != 1: raise ValueError('Что-то пошло не так')
-        return arg
+        return arg % euler
 
     @staticmethod
     def generate_keys() -> KeyPair:
