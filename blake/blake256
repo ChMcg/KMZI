@@ -1,0 +1,25 @@
+#!/bin/env python3
+
+import argparse
+import sys
+
+from blake import Blake
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-f', '--file', nargs='?',
+                    type=argparse.FileType('rb'), default=sys.stdin)
+parser.add_argument('-v', '--verbose', action='store_true', default=False)
+args = parser.parse_args()
+
+
+def main():
+    # print(args)
+    blake = Blake()
+    blake.set_verbose(args.verbose)
+    data = args.file.read()
+    digest = blake.hexdigest(data)
+    print(digest)
+
+
+if __name__ == '__main__':
+    main()
