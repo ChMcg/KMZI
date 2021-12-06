@@ -8,6 +8,7 @@ from blake import Blake
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', '--file', nargs='?',
                     type=argparse.FileType('rb'), default=sys.stdin)
+parser.add_argument('-s', '--salt', nargs='?', default=None)
 parser.add_argument('-v', '--verbose', action='store_true', default=False)
 args = parser.parse_args()
 
@@ -15,6 +16,7 @@ args = parser.parse_args()
 def main():
     # print(args)
     blake = Blake()
+    if args.salt: blake.addsalt(args.salt.encode())
     blake.set_verbose(args.verbose)
     data = args.file.read()
     digest = blake.hexdigest(data)

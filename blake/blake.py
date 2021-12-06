@@ -140,7 +140,7 @@ class Blake(object):
                 )
         saltsize = self.WORDBYTES * 4
         if len(salt) < saltsize:
-            salt = (chr(0)*(saltsize-len(salt)) + salt)
+            salt = (b'\x00'*(saltsize-len(salt)) + salt)
         else:
             salt = salt[-saltsize:]
         self.salt[0] = self.byte2int(salt[  : 4])
@@ -202,7 +202,7 @@ class Blake(object):
         OO = b'\x81'
         PADDING = OZ + ZZ*128
 
-        tt = self.t + (len(self.cache) << 3)
+        tt = self.t + (len(self.cache) * 8)
         msglen = self._int2eightByte(tt)
 
         sizewithout = self.BLKBYTES - ((self.WORDBITS // 4)+1)
@@ -214,12 +214,12 @@ class Blake(object):
             if len(self.cache) < sizewithout:
                 if len(self.cache) == 0:
                     self.nullt = 1
-                self.t -= (sizewithout - len(self.cache)) << 3
+                self.t -= (sizewithout - len(self.cache)) * 8
                 self.update(PADDING[:sizewithout - len(self.cache)])
             else:
-                self.t -= (self.BLKBYTES - len(self.cache)) << 3
+                self.t -= (self.BLKBYTES - len(self.cache)) * 8
                 self.update(PADDING[:self.BLKBYTES - len(self.cache)])
-                self.t -= (sizewithout+1) << 3
+                self.t -= (sizewithout+1) * 8
                 self.update(PADDING[1:sizewithout+1])
 
                 self.nullt = 1
