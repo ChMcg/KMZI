@@ -1,9 +1,10 @@
 from __future__ import annotations
 from bitarray import bitarray
-from des_materials import DES_materials
 from enum import Enum
-from other import bits_to_raw, chunks, hex_to_raw, xor, shift, permutation, split_halves, bytes_to_str_bitarray, bits_to_hex
-from other import print_table_of_bits, print_table
+
+from des.des_materials import DES_materials
+from des.other import bits_to_raw, chunks, hex_to_raw, xor, shift, permutation, split_halves, bytes_to_str_bitarray, bits_to_hex
+from des.other import print_table_of_bits, print_table
 
 from tqdm import tqdm
 

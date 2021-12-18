@@ -1,4 +1,4 @@
-from des import DES, Data
+from des.des import DES, Data
 
 
 class DES_EDE:

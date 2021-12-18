@@ -1,5 +1,7 @@
+from random import randint
 from rsa.rsa import RSA, Data
 from blake.blake import Blake
+from protocol import Client, Address
 import time
 
 
@@ -35,7 +37,15 @@ def blake_test():
     digest = blake.hexdigest(data)
     print(digest)
 
+def protocol_test():
+    port = randint(5000, 5099)
+    print(f"port: {port}")
+    client = Client(port)
+    client.wait_handshake()
+    client.receive_message()
+        
 
 if __name__ == '__main__':
     # rsa_test()
-    blake_test()
+    # blake_test()
+    protocol_test()
