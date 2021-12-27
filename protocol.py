@@ -122,9 +122,9 @@ class Client:
         data = self.client_socket.recv(10240)
         message: Message = pickle.loads(data)
         origin = Des.decrypt(message.data, key)
-        print(f'Получено сообщение: "{origin.to_raw()}"')
+        print(f'Получено сообщение: "{origin.to_raw()}"', end=', ')
 
         valid = message.data.to_raw() == RSA.decrypt(message.signature, self.client_key).to_raw()
 
-        if valid: print("Подпись верна")        
-        else: print("Подпись не верна")
+        if valid: print("подпись верна")        
+        else: print("подпись не верна")
